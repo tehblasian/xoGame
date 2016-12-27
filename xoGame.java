@@ -1,60 +1,80 @@
+package xoGame;
 import java.util.Scanner;
-public class xoGame {
-
+public class xoGame{
+	
+	private static int numRound = 1;
 	
 	public static void main(String[] args){
-		xoGame.run();
+		new xoGame();
 	}
 
-	public static void run(){
+	public xoGame(){
 		//variable declarations
 		String playAgain = "";
 		String goFirst = "";
-		String single = "";
+		int versus;
+		int switchTurns;
 		int difficulty = 5;
 		
 		//scanner for input
 		Scanner input = new Scanner(System.in);
 		
 		//welcome message
-		System.out.println("	Classic Tic-Tac-Toe");
-		System.out.println("	-------------------");
+		System.out.println("-------------------------");
+		System.out.println("// Classic Tic-Tac-Toe //");
+		System.out.println("-------------------------\n");
 		
-		//create players
+		//menu to allow player to select single player or multiplayer
+		String[] VS = {"Single Player", "Local Multiplayer"};
+		Menu vs = new Menu(VS);
+		vs.setTopPrompt("Select Game Mode:");
+		
+		versus = vs.readOptionNumber();
+		
+		//create players based on choice of game mode
 		Player P1 = new Player();
 		Player P2 = new Player("X");
 		
+		//set player 2's symbol based on player 1's choice
 		if(P1.getSymbol().equalsIgnoreCase("X"))
 			P2.setSymbol("O");
 		
-		do{
-		//ask if player wants to play vs human or bot
-		System.out.println("Would you like to play against a bot? Enter y/n: ");
-		single = input.next();
-		}while(!(single.equalsIgnoreCase("y") || single.equalsIgnoreCase("n") || single.equalsIgnoreCase("yes") || single.equalsIgnoreCase("no")));
+		//make player 2 go first or second based on player 1's choice
+		if(!(P1.isFirst()))
+				P2.goFirst();  
 		
-		if(single.equalsIgnoreCase("y") || single.equalsIgnoreCase("yes")){
+		//set player 2's name based on game mode
+		if(versus == 1){
 			P2.setName("Tic-Tac-Troll");
 			P2.makeBot();
-			//alternate message
-			System.out.println("	Impossible Tic-Tac-Toe");
-			System.out.println("	----------------------");
 		}
-		else{
+		else if(versus == 2){
 			System.out.println("What is Player 2's name?");
-			P2.setName(input.next());
+			P2.setName(input.nextLine());
 		}
 		
-		if(!(P1.isFirst()))
-			P2.goFirst();  
+		//menu to pick whether players will take turns going first, or if they will choose after each round
+		String[] turnSwitch = {"Alternating", "Manual"};
+		Menu turns = new Menu(turnSwitch);
+		turns.setTopPrompt("Select Turn Switch: ");
+		
+		switchTurns = turns.readOptionNumber();
+		
+		//display an alternate message if in single player mode
+		if(versus == 1){
+			System.out.println("----------------------------");
+			System.out.println("// Impossible Tic-Tac-Toe //");
+			System.out.println("----------------------------\n");
+		}
 		
 		//create board
 		xoBoard board = new xoBoard();
 		
 		//play
 		do{
-			//display number of wins for each player
-			System.out.println("WINS -- " + P1.getName() + ": " + P1.getWinCount() + "\n\t " + P2.getName() + ": " + P2.getWinCount());
+			//display round and number of wins for each player
+			System.out.println("ROUND: " + numRound);
+			System.out.println("WINS -- " + P1.getName() + ": " + P1.getWinCount() + "\n\t" + P2.getName() + ": " + P2.getWinCount());
 			//display the board once only if human goes first
 			if(P1.isFirst() || !P2.isABot())
 				System.out.println(board);
@@ -163,14 +183,9 @@ public class xoGame {
 					break;
 				}
 			}
-			
-		
 			}while(board.movesLeft());
 			
-		//consume new line
-		input.nextLine();
 		
-		//ask player to play again
 		System.out.println("\nWould you like to play again? Enter y/n: ");
 		playAgain = input.next();
 		
@@ -179,26 +194,40 @@ public class xoGame {
 		else if(playAgain.equalsIgnoreCase("n") || playAgain.equalsIgnoreCase("no"))
 			break;
 		
-		//allow player to decide who goes first in the next round
-		if(P1.isFirst()){
-			System.out.println("Would you like to let your opponent go first? Enter y/n: ");
-			goFirst = input.next();
-			if(goFirst.equalsIgnoreCase("y") || goFirst.equalsIgnoreCase("yes")){
+		//automatically switch player order if turn switch is set to automatic
+		if(switchTurns == 1){
+			if(P1.isFirst()){
 				P1.goLast();
 				P2.goFirst();
 			}
-		}
-		
-		else if(P2.isFirst()){
-			System.out.println("Would you like to go first? Enter y/n: ");
-			goFirst = input.next();
-			if(goFirst.equalsIgnoreCase("y") || goFirst.equalsIgnoreCase("yes")){
+			else if(P2.isFirst()){
 				P1.goFirst();
 				P2.goLast();
 			}
 		}
 		
+		//allow player to decide who goes first in the next round if turn switch is set to manual
+		if(switchTurns == 2){
+			if(P1.isFirst()){
+				System.out.println("Would you like to let your opponent go first? Enter y/n: ");
+				goFirst = input.next();
+				if(goFirst.equalsIgnoreCase("y") || goFirst.equalsIgnoreCase("yes")){
+					P1.goLast();
+					P2.goFirst();
+				}
+			}
 		
+			else if(P2.isFirst()){
+				System.out.println("Would you like to go first? Enter y/n: ");
+				goFirst = input.next();
+				if(goFirst.equalsIgnoreCase("y") || goFirst.equalsIgnoreCase("yes")){
+					P1.goFirst();
+					P2.goLast();
+				}
+			}
+		}	
+		//update round number
+		numRound++;
 	    }while(playAgain.equalsIgnoreCase("y") || playAgain.equalsIgnoreCase("yes"));
 		
 		System.out.println("Thanks for playing!");

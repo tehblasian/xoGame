@@ -1,9 +1,11 @@
+package xoGame;
 import java.util.Scanner;
 
 public class Player {
 
 		private String symbol = "";
 		private String name = "";
+		private int playerNumber = 0;
 		private int numWins;
 		private int numLosses;
 		private boolean first;
@@ -16,11 +18,11 @@ public class Player {
 			String symbol, goFirst;
 			boolean start = false;
 			//create players
-			System.out.println("What is your name?");
-			this.name = input.next();
+			System.out.println("Enter Player " + ++playerNumber + "'s name: ");
+			this.name = input.nextLine();
 			
 			do{
-				System.out.println("Are you X's or O's? Enter 'X' or 'O': ");
+				System.out.println("Choose your symbol! Enter 'X' or 'O': ");
 				symbol = input.next().toUpperCase();
 			}while(!(symbol.equalsIgnoreCase("X") || symbol.equalsIgnoreCase("O")));
 			
@@ -48,6 +50,7 @@ public class Player {
 			this.isAComputer = false;
 			this.numWins = 0;
 			this.numLosses = 0;
+			playerNumber++;
 		}
 			
 		public Player(String symbol){
@@ -57,6 +60,7 @@ public class Player {
 			this.isAComputer = false;
 			this.numWins = 0;
 			this.numLosses = 0;
+			playerNumber++;
 		}
 
 		//adds 1 to win count

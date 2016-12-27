@@ -1,3 +1,4 @@
+package xoGame;
 import java.util.*;
 public class xoBoard {
 
@@ -79,7 +80,7 @@ public class xoBoard {
 		
 	}
 	
-
+	//returns number of turns left
 	public boolean movesLeft(){
 		return (this.movesLeft > 0);
 	}
@@ -184,7 +185,7 @@ public class xoBoard {
     //////////////////
 	//METHODS FOR AI//
 	//////////////////
-	private int minimax(xoBoard board, Player computer, boolean isCom){
+	private int minimax(xoBoard board, Player computer, int alpha, int beta, boolean isCom){
 		
 		//variable declarations
 		int row = 0;
@@ -212,9 +213,13 @@ public class xoBoard {
 				//make move
 				board.add(row, col, computer.getSymbol());
 				//recursively call minimax to get max value
-				bestScore = Math.max(bestScore, minimax(board, computer, !isCom));
+				bestScore = Math.max(bestScore, minimax(board, computer, alpha, beta, !isCom));
 				//undo move
 				board.remove(row, col);
+				//alpha beta pruning
+				alpha = Math.max(alpha, bestScore);
+				if(beta <= alpha)
+					break;
 			}
 		best = bestScore;
 		}
@@ -227,9 +232,13 @@ public class xoBoard {
 				//make move
 				board.add(row, col, computer.opposite());
 				//recursively call minimax to get min value
-				bestScore = Math.min(bestScore, minimax(board, computer, !isCom));
+				bestScore = Math.min(bestScore, minimax(board, computer, alpha, beta, !isCom));
 				//undo move
 				board.remove(row, col);
+				//alpha beta pruning
+				beta = Math.min(beta, bestScore);
+				if(beta <= alpha)
+					break;
 			}	
 		best = bestScore;
 		}
@@ -282,7 +291,7 @@ public class xoBoard {
 					//make move
 					test.add(row, col, computer.getSymbol());
 					//evaluate move
-					int moveScore = minimax(test, computer, false);
+					int moveScore = minimax(test, computer, Integer.MIN_VALUE, Integer.MAX_VALUE, false);
 					//add move to list of available moves
 					moveBank.add((row + "" + col));
 					//undo move
